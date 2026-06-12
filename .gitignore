@@ -1,0 +1,22 @@
+# Python Caches & Virtual Envs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+.env
+
+# Node.js/Frontend dependencies and builds
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
