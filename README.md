@@ -10,7 +10,7 @@ DukaanDost AI is a full-stack legal auditor application designed specifically fo
 ![DukaanDost AI Dashboard Preview](dukaandost_dashboard_preview.png)
 
 ### Live Demo Link
-🔗 **Frontend Website**: [https://frontend-three-ashen-77.vercel.app](https://frontend-three-ashen-77.vercel.app)
+🔗 **Frontend Website**: [https://dukaan-dost-ai.vercel.app](https://dukaan-dost-ai.vercel.app)
 
 ---
 

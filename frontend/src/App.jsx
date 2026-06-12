@@ -842,7 +842,7 @@ export default function App() {
             </a>
             <span className="text-gray-700">•</span>
             <a 
-              href="https://frontend-three-ashen-77.vercel.app" 
+              href="https://dukaan-dost-ai.vercel.app" 
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-amber-400 transition-colors flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"
