@@ -818,13 +818,41 @@ export default function App() {
 
       </main>
 
-      {/* Footer */}
-      <footer className="mt-20 text-center text-[10px] text-gray-500 font-semibold tracking-wider uppercase border-t border-white/5 w-full max-w-6xl pt-8 px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <span>© 2026 DukaanDost AI • Built with Claude Fable 5 for Meesho ScriptedBy{'{'}Her{'}'} 2.0</span>
-        <div className="flex gap-4">
-          <a href="#" className="hover:text-amber-400 hover:underline transition-all flex items-center gap-1">Docs <ExternalLink className="w-2.5 h-2.5" /></a>
-          <span>•</span>
-          <a href="#" className="hover:text-amber-400 hover:underline transition-all flex items-center gap-1">Github <ExternalLink className="w-2.5 h-2.5" /></a>
+      {/* Premium Footer */}
+      <footer className="w-full max-w-6xl mt-24 px-6 border-t border-white/10 pt-8 pb-12 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-gray-500 font-medium">
+        <div className="flex flex-col items-center md:items-start gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-amber-500" />
+            <span className="font-bold text-gray-300 tracking-wider uppercase text-[10px]">DukaanDost AI</span>
+          </div>
+          <p className="text-[11px] text-gray-500 text-center md:text-left">
+            Empowering Bharat's small retail merchants with agentic legal audits.
+          </p>
+        </div>
+        
+        <div className="flex flex-col items-center md:items-end gap-3">
+          <div className="flex items-center gap-5">
+            <a 
+              href="https://github.com/Rafiaminhaj/dukaan-dost-ai" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:text-amber-400 transition-colors flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"
+            >
+              Github <ExternalLink className="w-3 h-3 text-amber-500" />
+            </a>
+            <span className="text-gray-700">•</span>
+            <a 
+              href="https://frontend-three-ashen-77.vercel.app" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-amber-400 transition-colors flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]"
+            >
+              Vercel Live <ExternalLink className="w-3 h-3 text-amber-500" />
+            </a>
+          </div>
+          <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest text-center md:text-right">
+            Built with 💛 by Rafia Minhaj for Meesho ScriptedBy{'{'}Her{'}'} 2.0
+          </p>
         </div>
       </footer>
     </div>
