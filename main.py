@@ -32,7 +32,7 @@ def read_root():
     }
 
 @app.post("/upload-contract")
-async def upload_contract(file: UploadFile = File(...)):
+async def upload_contract(file: UploadFile = File(...), language: str = "hinglish"):
     filename = file.filename.lower()
     content = await file.read()
     
@@ -84,7 +84,7 @@ async def upload_contract(file: UploadFile = File(...)):
         
     # Run the Agentic RAG audit pipeline
     try:
-        report = agent.audit_contract(contract_text)
+        report = agent.audit_contract(contract_text, language=language)
         return {
             "success": True,
             "filename": file.filename,
