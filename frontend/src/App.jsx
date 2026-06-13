@@ -276,11 +276,23 @@ const LOCALIZED_MOCK_DATA = {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState("dashboard"); // dashboard, orchestrator, n8n, whatsapp
+  const [activeTab, setActiveTab] = useState("dashboard"); // dashboard, orchestrator, n8n, whatsapp, prospector
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  
+  // Lead Prospector States
+  const [prospectorPrompt, setProspectorPrompt] = useState(
+    "Mera naam Saddam Kassim hai aur main Websites aur Mobile apps build karta hun. Mere city Satna(MP) mein kuch aise businesses hain jo market mein acha perform kar rahe hain but unhone abhi tak websites ya apps build nahi karwaye hain. Due to which they are not online. So, main chahta hun ki tum google maps se aise businesses ki ek list excel sheet mein tayyar karo jinki profiles par website/apps ke links nahi hain, with all the details."
+  );
+  const [prospectorModel, setProspectorModel] = useState("Fable 5 High");
+  const [prospectorLoading, setProspectorLoading] = useState(false);
+  const [prospectorLogs, setProspectorLogs] = useState([]);
+  const [prospectorLeads, setProspectorLeads] = useState(null);
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [copiedLeadIdx, setCopiedLeadIdx] = useState(null);
+  const [copiedLeadType, setCopiedLeadType] = useState(""); // whatsapp, email
   const [errorMessage, setErrorMessage] = useState("");
   
   // Interactive Custom States
@@ -738,6 +750,110 @@ export default function App() {
     }, 2000);
   };
 
+  // Lead Prospector actions
+  const runLeadProspector = () => {
+    setProspectorLoading(true);
+    setProspectorLeads(null);
+    setSelectedLead(null);
+    setProspectorLogs([
+      "Initializing Claude Fable 5 Lead Prospector Agent...",
+      "Parsing query parameters: City = Satna (MP), Missing Property = Website/App Links.",
+      "Connecting to Google Maps Scraper Pipeline Webhook...",
+      "Scraping local businesses in Satna, Madhya Pradesh...",
+      "Scanning Google Maps Profile ID: G-43109 (Verma Sweets) - Website exists (Skipped).",
+      "Scanning Google Maps Profile ID: G-77218 (Sharma Kirana Store) - Website missing! (Flagged).",
+      "Scanning Google Maps Profile ID: G-88930 (Satna Sweets & Namkeen) - Website missing! (Flagged).",
+      "Scanning Google Maps Profile ID: G-10928 (Verma Hardware & Paints) - Website missing! (Flagged).",
+      "Scanning Google Maps Profile ID: G-55621 (MP Clothing & Garments) - Website missing! (Flagged).",
+      "Scanning Google Maps Profile ID: G-99214 (Ganga Diagnostic Lab) - Website missing! (Flagged).",
+      "Analyzing business reputation indicators (Review Count, Rating, Open Status)...",
+      "Generating custom outreach pitches for 5 high-potential leads...",
+      "Compilation completed. Generating CSV sheet download stream..."
+    ]);
+
+    const leadList = [
+      {
+        id: 1,
+        name: "Sharma Kirana Store",
+        category: "Grocery / Kirana",
+        address: "Pateri, Satna, MP 485001",
+        phone: "+91 94251 12345",
+        reviews: "142 Reviews (4.2★)",
+        pitch: "Namaste Sharma ji! Main dekh raha tha aapki shop 'Sharma Kirana Store' Satna me bohot famous hai aur log reviews me aapke product quality ki tareef kar rahe hain. Lekin aapka Google par koi digital website nahi hai jiski wajah se aapke products online order nahi ho sakte. Main aapke business ke liye ek professional online store aur delivery mobile app bana sakta hoon jisse aap Satna ke grahako ko online service de sakein. Kya hum is baare me baat kar sakte hain?",
+        email: "Subject: Sharma Kirana Store ko Satna me online le jaane ke liye digital proposal\n\nNamaste Sharma ji,\n\nMain aapki Satna sthit 'Sharma Kirana Store' ki Google Maps profile dekh raha tha. Aapki store ke reviews aur rating behad behtareen hain, par digital website/app na hone ke karan grahak aapse online order nahi kar pa rahe hain.\n\nMain Satna me local businesses ke liye online websites aur mobile apps build karta hoon. Main aapke store ke liye online payment support ke sath ek high-speed catalog website bana sakta hoon. Agar aap dilchasp hain toh kripya is number par call/message karein.\n\nRegards,\nSaddam Kassim\n+91 98765 43210"
+      },
+      {
+        id: 2,
+        name: "Satna Sweets & Namkeen",
+        category: "Bakery / Restaurant",
+        address: "Semariya Chowk, Satna, MP 485001",
+        phone: "+91 94258 54321",
+        reviews: "320 Reviews (4.4★)",
+        pitch: "Namaste bhaiya! Aapki 'Satna Sweets & Namkeen' par log mithaiyo ke shaukeen hain par online home-delivery link missing hai. Main aapki mithai shop ke liye ek clean online ordering website aur custom mobile app design kar sakta hoon jisse grahak direct click karke ghar baithe order de sakein aur Swiggy/Zomato ka commission bhi bache.",
+        email: "Subject: Satna Sweets & Namkeen ke liye Swiggy/Zomato commission bachane ka proposal\n\nNamaste,\n\nMain aapke sweet shop 'Satna Sweets' ki profile dekh raha tha. Swiggy/Zomato aapke orders par 25% commission lete hain, lekin agar aapki apni website aur mobile app ho toh aap 100% munafa khud rakh sakte hain.\n\nMain aapke liye direct home delivery catalog website bana sakta hoon. Kya hum kal ispar charcha kar sakte hain?\n\nRegards,\nSaddam Kassim\n+91 98765 43210"
+      },
+      {
+        id: 3,
+        name: "Verma Hardware & Paints",
+        category: "Hardware Store",
+        address: "Rewa Road, Satna, MP 485001",
+        phone: "+91 98930 98765",
+        reviews: "88 Reviews (4.1★)",
+        pitch: "Namaste Verma ji! Aapki Satna ki purani 'Verma Hardware & Paints' shop ko log jante hain par nayi generation online hardware catalogs dhoondti hai. Main aapke products (paints, tools, sanitaries) ke liye ek e-catalog website aur custom listing app build kar sakta hoon jisse log direct price details dekh sakein.",
+        email: "Subject: Verma Hardware ke liye online catalog aur quotation system portal proposal\n\nNamaste Verma ji,\n\nAapki Satna ki hardware business ke products ko online catalog format me pradarshit karne ke liye main ek billing and product website bana sakta hoon. Isse building contractors aur local customer aapse direct online rate cards aur delivery orders le sakenge.\n\nRegards,\nSaddam Kassim\n+91 98765 43210"
+      },
+      {
+        id: 4,
+        name: "MP Clothing & Garments",
+        category: "Retail Store",
+        address: "Jawahar Nagar, Satna, MP 485001",
+        phone: "+91 91112 33445",
+        reviews: "75 Reviews (4.0★)",
+        pitch: "Namaste ji! Aapke modern clothes collections ko Satna ke baaki log online nahi dekh pa rahe hain kyunki aapka catalog missing hai. Main design kar sakta hoon ek attractive fashion e-commerce portal aur WhatsApp order booking app, jahan customer aapka stock dekh kar WhatsApp par size and booking kar sakein.",
+        email: "Subject: MP Clothing ke products ko WhatsApp e-commerce catalog me lane ke liye suggestion\n\nNamaste,\n\nAapke shop ke readymade garments collections ke liye main ek mobile e-commerce portal e-store bana sakta hoon jahan grahak stock check karke direct WhatsApp order place kar sakte hain.\n\nRegards,\nSaddam Kassim\n+91 98765 43210"
+      },
+      {
+        id: 5,
+        name: "Ganga Diagnostic Lab",
+        category: "Healthcare / Clinic",
+        address: "Civil Lines, Satna, MP 485001",
+        phone: "+91 76722 55667",
+        reviews: "210 Reviews (4.5★)",
+        pitch: "Namaste Doctor Sahab! 'Ganga Diagnostic Lab' par log tests toh karwate hain par online appointment booking and report download options available nahi hain. Main ek safe health booking portal design kar sakta hoon jahan customer online test book karein aur PDF reports unke account me automatic download ho jaye.",
+        email: "Subject: Ganga Diagnostic Lab ke test reports aur appointment portal booking automation\n\nNamaste Doctor Sahab,\n\nAapki Satna ki clinic ke liye lab automation appointment scheduling portal prastut hai. Patient test reports online login karke automatic download kar sakenge. Isse clinic management fully digital ho jayega.\n\nRegards,\nSaddam Kassim\n+91 98765 43210"
+      }
+    ];
+
+    setTimeout(() => {
+      setProspectorLeads(leadList);
+      setProspectorLoading(false);
+      setSelectedLead(leadList[0]);
+    }, 2500);
+  };
+
+  const downloadCSV = () => {
+    if (!prospectorLeads) return;
+    const headers = ["Business Name", "Category", "Address", "Phone", "Reviews", "Website Status", "App Status"];
+    const rows = prospectorLeads.map(lead => [
+      `"${lead.name}"`,
+      `"${lead.category}"`,
+      `"${lead.address.replace(/"/g, '""')}"`,
+      `"${lead.phone}"`,
+      `"${lead.reviews}"`,
+      "\"Missing (None)\"",
+      "\"Missing (None)\""
+    ]);
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Satna_Offline_Businesses_Leads.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Chatbot message sender
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -945,6 +1061,17 @@ export default function App() {
             }`}
           >
             <Smartphone className="w-3.5 h-3.5" /> WhatsApp Agent
+          </button>
+
+          <button
+            onClick={() => setActiveTab("prospector")}
+            className={`px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === "prospector"
+                ? "border-amber-500 text-amber-400"
+                : "border-transparent text-gray-400 hover:text-white"
+            }`}
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" /> Lead Prospector
           </button>
         </div>
       </div>
@@ -1814,6 +1941,196 @@ export default function App() {
               </form>
 
             </div>
+          </div>
+        )}
+
+        {/* ==================== LEAD PROSPECTOR TAB ==================== */}
+        {activeTab === "prospector" && (
+          <div className="flex flex-col gap-6 animate-fadeIn text-slate-250 max-w-4xl mx-auto w-full">
+            
+            {/* Claude Fable 5 Prompt Box Mockup matching screenshot exactly */}
+            <div className="bg-white text-slate-850 p-6 rounded-2xl border border-slate-200 shadow-2xl flex flex-col gap-4 w-full transition-all duration-350 hover:shadow-amber-500/5">
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                <Cpu className="w-3.5 h-3.5 text-amber-500" /> Claude Fable 5 Prompt Workspace
+              </div>
+              
+              <textarea
+                value={prospectorPrompt}
+                onChange={(e) => setProspectorPrompt(e.target.value)}
+                placeholder="Ask Claude Fable 5 to prospect offline businesses..."
+                rows={5}
+                className="w-full text-sm font-semibold text-slate-800 leading-relaxed outline-none border-none resize-none focus:ring-0 bg-transparent"
+                style={{
+                  fontFamily: "inherit",
+                }}
+              />
+              
+              {/* Controls bar */}
+              <div className="flex items-center justify-between border-t border-slate-100 pt-4 mt-2">
+                {/* Left side Plus button */}
+                <button className="p-2 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-slate-650 transition-all cursor-pointer">
+                  <span className="text-xl font-light text-slate-500">+</span>
+                </button>
+                
+                {/* Right side selector, mic, and submit */}
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-250 rounded-xl cursor-pointer transition-all">
+                    <span className="text-[11px] font-bold text-slate-600">{prospectorModel} High</span>
+                    <select
+                      value={prospectorModel}
+                      onChange={(e) => setProspectorModel(e.target.value)}
+                      className="text-[10px] bg-transparent text-slate-600 font-extrabold outline-none border-none cursor-pointer p-0"
+                    >
+                      <option value="Fable 5 High">High</option>
+                      <option value="Fable 5 Balanced">Balanced</option>
+                      <option value="Fable 5 Fast">Fast</option>
+                    </select>
+                  </div>
+                  
+                  <button className="p-2.5 hover:bg-slate-50 border border-slate-200 rounded-full text-slate-500 hover:text-slate-700 transition-all cursor-pointer">
+                    <Mic className="w-4 h-4" />
+                  </button>
+                  
+                  <button 
+                    onClick={runLeadProspector}
+                    disabled={prospectorLoading}
+                    className="p-2.5 bg-[#d97706] hover:bg-[#b45309] text-white rounded-xl shadow-md transition-all cursor-pointer active:scale-95 disabled:opacity-50"
+                  >
+                    <Send className="w-4 h-4 rotate-[-45deg] translate-x-[1px] translate-y-[-1px]" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Scraper Logging progress */}
+            {prospectorLoading && (
+              <div className="glass p-6 rounded-2xl w-full flex flex-col gap-3">
+                <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
+                  <span className="text-xs font-black uppercase text-amber-400 flex items-center gap-2">
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Claude Lead Prospector Pipeline Active...
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-bold">Maps Agentic Scraper</span>
+                </div>
+                <div className="bg-black/45 p-4 rounded-xl border border-white/5 h-[160px] overflow-y-auto font-mono text-[10px] text-green-300 flex flex-col gap-1.5 leading-relaxed">
+                  {prospectorLogs.map((log, i) => (
+                    <div key={i}>{log}</div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Generated results Table & cold outreach assistants */}
+            {prospectorLeads && (
+              <div className="flex flex-col gap-6 w-full animate-slideDown">
+                
+                {/* Header toolbar */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-between sm:items-center">
+                  <div>
+                    <h3 className="font-extrabold text-base text-white flex items-center gap-2">
+                      <FileSpreadsheet className="w-5 h-5 text-amber-500" /> Scraped Offline Businesses (Satna, MP)
+                    </h3>
+                    <p className="text-[10px] text-gray-400">Claude filtered 5 profiles with missing website and app links.</p>
+                  </div>
+                  
+                  <button 
+                    onClick={downloadCSV}
+                    className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs rounded-xl flex items-center gap-1.5 shadow-lg shadow-emerald-500/10 cursor-pointer"
+                  >
+                    <FileSpreadsheet className="w-4 h-4" /> Export Lead Sheet (.CSV)
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                  
+                  {/* Business list table */}
+                  <div className="md:col-span-7 glass rounded-2xl overflow-hidden border border-white/5">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr className="bg-white/5 border-b border-white/5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                          <th className="p-3">Store Name</th>
+                          <th className="p-3">Category</th>
+                          <th className="p-3">Reviews</th>
+                          <th className="p-3">Links Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {prospectorLeads.map((lead) => (
+                          <tr 
+                            key={lead.id}
+                            onClick={() => setSelectedLead(lead)}
+                            className={`border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors ${
+                              selectedLead?.id === lead.id ? "bg-amber-500/10 text-amber-300 font-bold" : ""
+                            }`}
+                          >
+                            <td className="p-3 font-semibold">{lead.name}</td>
+                            <td className="p-3 text-gray-400">{lead.category}</td>
+                            <td className="p-3 text-gray-400">{lead.reviews}</td>
+                            <td className="p-3 text-red-400 font-extrabold text-[10px]">
+                              ❌ Missing Website
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pitch Creator panel */}
+                  <div className="md:col-span-5 glass p-5 rounded-2xl border border-white/5 flex flex-col gap-4">
+                    {selectedLead ? (
+                      <div className="flex flex-col gap-4">
+                        <div className="pb-3 border-b border-white/5">
+                          <span className="text-[9px] text-amber-400 font-extrabold uppercase block mb-1">Target Client:</span>
+                          <h4 className="font-black text-white text-xs">{selectedLead.name}</h4>
+                          <span className="text-[10px] text-gray-400">{selectedLead.category} • {selectedLead.address}</span>
+                        </div>
+
+                        {/* WhatsApp Pitch script */}
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[9px] text-gray-500 font-extrabold uppercase">WhatsApp Pitch:</span>
+                            <button 
+                              onClick={() => handleCopyText(selectedLead.pitch, selectedLead.id, "lead_whatsapp")}
+                              className="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 cursor-pointer"
+                            >
+                              {copiedIdx === selectedLead.id && copiedTextType === "lead_whatsapp" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                              {copiedIdx === selectedLead.id && copiedTextType === "lead_whatsapp" ? "Copied" : "Copy Pitch"}
+                            </button>
+                          </div>
+                          <div className="p-3 bg-[#262d31] rounded-xl border border-white/5 text-[11px] leading-relaxed italic text-gray-200">
+                            "{selectedLead.pitch}"
+                          </div>
+                        </div>
+
+                        {/* Email Pitch script */}
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-[9px] text-gray-500 font-extrabold uppercase">Email Pitch:</span>
+                            <button 
+                              onClick={() => handleCopyText(selectedLead.email, selectedLead.id, "lead_email")}
+                              className="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 cursor-pointer"
+                            >
+                              {copiedIdx === selectedLead.id && copiedTextType === "lead_email" ? <Check className="w-3.5 h-3.5 text-emerald-450" /> : <Copy className="w-3.5 h-3.5" />}
+                              {copiedIdx === selectedLead.id && copiedTextType === "lead_email" ? "Copied" : "Copy Email"}
+                            </button>
+                          </div>
+                          <pre className="p-3 bg-black/45 rounded-xl border border-white/5 text-[10px] whitespace-pre-wrap font-sans text-slate-350 leading-relaxed h-[110px] overflow-y-auto">
+                            {selectedLead.email}
+                          </pre>
+                        </div>
+
+                      </div>
+                    ) : (
+                      <div className="text-gray-500 italic text-center py-12">
+                        Select a row from the leads table to see Claude Fable 5 custom outreach copy.
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+
+              </div>
+            )}
+
           </div>
         )}
 
