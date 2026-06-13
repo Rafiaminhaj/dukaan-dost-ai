@@ -866,6 +866,25 @@ export default function App() {
         </div>
         
         <div className="flex flex-wrap items-center gap-3 mt-4 md:mt-0">
+          {/* Global Language Selector */}
+          <div className="flex items-center gap-2 bg-slate-900/60 border border-white/10 hover:border-amber-500/30 px-3 py-2 rounded-xl transition-all duration-300">
+            <Languages className="w-3.5 h-3.5 text-amber-400" />
+            <select 
+              value={selectedLanguage}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="text-xs bg-transparent text-gray-300 outline-none cursor-pointer border-none font-bold"
+            >
+              <option value="hinglish" className="bg-gray-900">Hinglish (Default)</option>
+              <option value="english" className="bg-gray-900">English (Original)</option>
+              <option value="hindi" className="bg-gray-900">Hindi (हिंदी)</option>
+              <option value="bengali" className="bg-gray-900">Bengali (বাংলা)</option>
+              <option value="tamil" className="bg-gray-900">Tamil (தமிழ்)</option>
+              <option value="telugu" className="bg-gray-900">Telugu (తెలుగు)</option>
+              <option value="marathi" className="bg-gray-900">Marathi (मराठी)</option>
+              <option value="urdu" className="bg-gray-900">Urdu (اردو)</option>
+            </select>
+          </div>
+
           <button 
             onClick={loadSampleContract} 
             className="px-4 py-2 text-xs font-bold rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 hover:border-amber-500/40 transition-all text-amber-300 flex items-center gap-2 cursor-pointer"
